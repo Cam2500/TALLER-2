@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <libpic30.h>  
+
+ //Se definen las entradas
+int peso = PORTBbits.RB0;
+int estatura = PORTBbits.RB1;
+int sexo = PORTBbits.RB2;
+int sensor_gota = PORTBbits.RB3;
+int sensor_aguja = PORTBbits.RB4;
+int sensor_volumen = PORTBbits.RB7;
+//Aunque las entradas como peso y estatura no pueden ser logicas, por el momento 
+//se toman asi para fines practicos y simplicidad del taller
+//Para una ejecucion correcta se debe incluir un teclado matricial para reconocer
+//las entradas como enteros.
+
+
+// Se definen las salidas
+int infusion = LATBbits.RB5;
+int llave = LATBbits.RB6;
+int alarma = LATBbits.RB8;
+
+int main(void) {
+    AD1PCFG = 0xFFFF;
+    
+    TRISB = 0b10011111;
+    
+    int volumen = 0;
+    volumen = 0.1 * peso + 0.5 * peso + 0.7 * estatura + 0.9 * sexo;
+    
+    while (1){
+        if (sensor_aguja == 1){
+            llave = 1;
+        }
+        if (sensor_volumen == 1){
+            llave = 0;
+            if (sensor_gota == 1){
+                infusion = 1;
+                __delay_ms(volumen*1000);
+            }
+            else{
+                alarma = 1;
+            }
+        }
+        return 1;
+    }
+            
+}
